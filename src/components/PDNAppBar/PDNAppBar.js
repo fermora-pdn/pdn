@@ -8,9 +8,9 @@ import PropTypes from 'prop-types';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
-//import MenuIcon from '@material-ui/icons/Menu';
 import Grid from '@material-ui/core/Grid';
-
+import Login from "../Login/Login";
+import app from "../../config/firebase";
 
 const styles = theme => ({
     root: {
@@ -26,8 +26,47 @@ const styles = theme => ({
 });
 
 class PDNAppBar extends React.Component {
+    state = {
+        open: false,
+        currentUser: null,
+        loading:false,
+        authenticated : false
+    };
+
+    handleClickOpen = () => {
+        this.setState({ open: true });
+    };
+
+    handleClose = () => {
+        this.setState({ open: false });
+    };
+    componentWillMount(){
+        app.auth().onAuthStateChanged(user =>{
+            if(user){
+                this.setState({
+                    authenticated : true,
+                    currentUsuer : user,
+                    loading: false
+                });
+            }else{
+                this.setState({
+                    authenticated : false,
+                    currentUser: null,
+                    loading : false
+                });
+            }
+        })
+    }
+    handleSignOut = ()=>{
+        app.auth().signOut().then(()=>{
+
+        }).catch(e=>{
+            alert(e);
+        })
+    };
 
     render(){
+
         const {classes } = this.props;
 
         return (
@@ -54,6 +93,14 @@ class PDNAppBar extends React.Component {
                                 <Button color="inherit" component={Link} to="/faq" >
                                     FAQ
                                 </Button>
+                                {
+                                    !this.state.authenticated &&
+                                        <Button color="inherit" onClick={this.handleClickOpen}>Iniciar sesión</Button>
+                                }
+                                {
+                                    this.state.authenticated && <Button color="inherit" onClick={this.handleSignOut}>Cerrar sesión</Button>
+                                }
+                                <Login open={this.state.open} handleClose={this.handleClose} />
                             </Toolbar>
                         </Grid>
                     </Grid>

@@ -228,10 +228,10 @@ class DemoDeclaraciones extends React.Component {
     };
 
     render() {
-        const {classes} = this.props;
+        const {classes, user} = this.props;
         return (
             <div>
-                <Header user={this.state.user} srcAvatar={this.state.srcAvatar}
+                <Header user={user.profile} srcAvatar={this.state.srcAvatar}
                         handleChangeUser={this.handleChangeUser}/>
                 <div className={classes.bgImg}>
                     <div className={classes.container}>

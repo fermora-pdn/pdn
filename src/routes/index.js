@@ -55,10 +55,6 @@ const pdnRoutes = [
     {
         path:"/formConsultaDenuncia",
         component: FormularioConsula
-    },
-    {
-        path : "/demodeclaraciones",
-        component: DemoDeclaraciones
     }
 ];
 

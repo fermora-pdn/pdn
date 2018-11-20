@@ -3,7 +3,9 @@ import pndRoutes from './routes/index';
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import P404 from './components/P404';
 import {createMuiTheme, MuiThemeProvider} from "@material-ui/core/styles";
-
+import PrivateRoute from "./PrivateRoute";
+import DemoDeclaraciones from './components/DemoDeclaraciones/demo';
+import app from "./config/firebase";
 
 const theme = createMuiTheme({
     palette: {
@@ -66,20 +68,61 @@ const p404 = () => {
     return <P404/>
 };
 
+
 class App extends React.Component {
+    state={loading :true, authenticated: false, user:null};
+
     constructor(props) {
         super(props);
-    }
+    };
+
+    componentWillMount(){
+        app.auth().onAuthStateChanged(user =>{
+            if(user){
+                let db = app.firestore();
+                db.collection('/users_demodeclaraciones').where("UID","==",user.uid).get().then((querySnapshot)=>{
+                    querySnapshot.forEach(doc=>{
+                        this.setState({
+                            user: {
+                                nombre : doc.data().nombre,
+                                apellidoPaterno: doc.data().apellidoPaterno,
+                                apellidoMaterno : doc.data().apellidoMaterno,
+                                profile : doc.data().profile
+                            },
+                            authenticated : true,
+                            currentUsuer : user,
+                            loading: false
+                        })
+                    });
+                });
+
+            }else{
+                this.setState({
+                    authenticated : false,
+                    currentUser: null,
+                    loading : false,
+                    user : null,
+                });
+            }
+        })
+    };
 
     render() {
+        const {authenticated, loading} = this.state;
+        if (loading) {
+            return <p>Cargando...</p>;
+        }
+
         return (
             <MuiThemeProvider theme={theme}>
                 <Router basename={process.env.PUBLIC_URL}>
                     <Switch>
                         {pndRoutes.map((prop, key) => {
                             return <Route exact path={prop.path} component={prop.component}  key={key} />;
+                           // return <PrivateRoute exact path={prop.path} component={prop.component}  key={key}  authenticated={this.state.authenticated}/>;
                         })}
-                        <Route render={p404}/>
+                         <PrivateRoute exact path={'/demodeclaraciones'} component={DemoDeclaraciones} authenticated={authenticated} user = {this.state.user}/>;
+                         <Route render={p404}/>
                     </Switch>
                 </Router>
             </MuiThemeProvider>

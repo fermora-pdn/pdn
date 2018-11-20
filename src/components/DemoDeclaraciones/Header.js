@@ -56,9 +56,8 @@ class PDNAppBar extends React.Component {
                     <Grid container spacing={0} justify='center'>
                         <Grid item xs={12} className={ classes.gridItem}>
                             <Toolbar>
-                                <IconButton  color="inherit" aria-label="Menu" component={Link} to="/">
+                                <IconButton  color="inherit" aria-label="Menu" component={Link} to="/demodeclaraciones">
                                     <img src={imgHeader} alt="logoPDN" style={{width:'110px'}}/>
-
                                 </IconButton>
                                 <Typography variant="title" color="inherit" className={classes.flex}>
 
